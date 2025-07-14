@@ -66,27 +66,20 @@ AgriScope/
 └── requirements.txt
 🚀 Run Locally
 1. Clone the repo
-bash
-Copy
-Edit
+
 git clone https://github.com/yourusername/agriscope.git
 cd agriscope
 2. Install dependencies
-bash
-Copy
-Edit
+
 pip install -r requirements.txt
 3. Setup your Gemini API key
 Create a .streamlit/secrets.toml file:
 
 toml
-Copy
-Edit
+
 GEMINI_API_KEY = "your_gemini_api_key"
 4. Start the Streamlit app
-bash
-Copy
-Edit
+
 streamlit run app.py
 📊 Sample Demo
 Choose a region like Punjab, pick Rice and Wheat, generate insights and predictions, and download a PDF — all in one flow!
@@ -106,23 +99,9 @@ Gemini 1.5 Flash (Google AI)
 Indian agriculture students who inspired this tool
 
 📬 Contact
-🔗 LinkedIn – Reddy Santosh Kumar
-🐙 GitHub – @yoursantoshdev
-📧 Email – reddysantosh@gmail.com
+🔗 LinkedIn –https://www.linkedin.com/in/reddy-santosh-kumar-a5b9622a2/
+🐙 GitHub – https://github.com/Santosh-Reddy1310
+📧 Email – reddysantosh1310@gmail.com
 
 🌱 Built for Bharat
 “Empowering the next billion learners with AI-powered, real-world tools.”
-
-yaml
-Copy
-Edit
-
----
-
-### ✅ Next Suggestions:
-
-- Add a demo video link or GIF in the `![AgriScope Demo](...)` section.
-- Include some sample screenshots in `/assets/` and link them below each section in the README.
-- Consider turning this into a Streamlit Cloud deployment and add the live URL too.
-
-Ready to upload it to GitHub? Want help writing a GitHub release or commit message too?
