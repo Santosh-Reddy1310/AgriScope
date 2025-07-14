@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints
+
+# Streamlit specific
+.streamlit/secrets.toml
+.streamlit/config.toml 
+
+# VSCode
+.vscode/
+
+# PyInstaller
+*.spec
+
+# Logs
+*.log
+
+# Mac OS / Windows
+.DS_Store
+Thumbs.db
+
+# Model/Export Files
+models/
+*.pkl
+*.joblib
+*.sav
+
+# PDF Reports
+*.pdf
+
+# Cache
+.cache/
