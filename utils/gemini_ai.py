@@ -3,11 +3,14 @@ import streamlit as st
 import google.generativeai as genai
 import pandas as pd
 from dotenv import load_dotenv
+from google.api_core.exceptions import RetryError, DeadlineExceeded, InternalServerError
 
+# Load API key from Streamlit secrets or .env
 load_dotenv()
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
+# ------------------------ AI INSIGHT SUMMARY ------------------------
 def generate_summary(region: str, data: pd.DataFrame, rain_data: pd.DataFrame = None) -> str:
     crops = data["Crop"].unique().tolist()
     summary_data = {}
@@ -21,25 +24,28 @@ def generate_summary(region: str, data: pd.DataFrame, rain_data: pd.DataFrame = 
             "peak_year": int(peak_year)
         }
 
-    # Basic prompt
-    prompt = f"""You're an expert agriculture analyst. Analyze this Indian crop production data for the region: {region}.
-
-Here are the crops and their stats:\n"""
+    prompt = f"""You're an expert agriculture analyst. Analyze this Indian crop production data for the region: {region}.\n\n"""
 
     for crop, stats in summary_data.items():
         prompt += f"- {crop}: Avg production = {stats['avg_production']}k tons, Peak year = {stats['peak_year']}\n"
 
-    # Add rainfall summary if provided
     if rain_data is not None and not rain_data.empty:
         rain_avg = rain_data["Rainfall"].mean()
         prompt += f"\nAverage annual rainfall in this region is around {rain_avg:.2f} mm.\n"
-        prompt += """Based on this, analyze how rainfall might be affecting crop production patterns.
-Highlight any trends, correlations, or surprising observations if visible.\n"""
+        prompt += """Analyze how rainfall affects crop production, and highlight any patterns.\n"""
 
-    prompt += "\nProvide a short and insightful summary (in markdown)."
+    prompt += "\nProvide a short and insightful summary in markdown."
 
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except (RetryError, DeadlineExceeded, InternalServerError) as e:
+        return (
+            f"⚠️ Gemini couldn't generate the summary right now. "
+            f"Try again later.\n\n(Error: {e.__class__.__name__})"
+        )
+
+# ------------------------ LIVE CROP PRICE ------------------------
 def get_live_crop_price(crop: str):
     prompt = f"""
     You are an agri price analyst. Give a brief summary of the current market price range of '{crop}' in India.
@@ -49,13 +55,14 @@ def get_live_crop_price(crop: str):
     - Trends (rising/falling)
     Be concise and clear for agriculture students.
     """
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except (RetryError, DeadlineExceeded, InternalServerError) as e:
+        return f"⚠️ Failed to fetch price info for {crop}. (Error: {e.__class__.__name__})"
 
-    response = model.generate_content(prompt)
-    return response.text.strip()
-
-
+# ------------------------ AI FUTURE FORECAST ------------------------
 def predict_future_trend_with_gemini(region: str, crop: str, data: pd.DataFrame) -> str:
-    # Prepare crop stats
     crop_df = data[data["Crop"] == crop]
     if crop_df.empty:
         return f"⚠️ No historical data available for {crop} in {region}."
@@ -84,5 +91,11 @@ def predict_future_trend_with_gemini(region: str, crop: str, data: pd.DataFrame)
     Format in markdown.
     """
 
-    response = model.generate_content(prompt)
-    return response.text.strip()
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except (RetryError, DeadlineExceeded, InternalServerError) as e:
+        return (
+            f"⚠️ Gemini couldn't generate a future trend prediction. "
+            f"Please try again soon.\n\n(Error: {e.__class__.__name__})"
+        )
